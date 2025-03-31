@@ -153,22 +153,22 @@ public class WordCounter {
         int WordNumber = 0;
 
         // allow retry once if stopword is missing
-        while (FindStopWord < 2) {
-            try {
-                WordNumber = processText(par1, par2);
-            } catch (TooSmallText e) {
-                System.out.println(e.toString());
-                scn.close();
-                return;
-            } catch (InvalidStopwordException e) {
-                System.out.println(e.toString());
-                if (FindStopWord < 2) {
-                    if (!isRunningJUnit()) {
-                        System.out.println(" try another stopword:");
-                    }
-                    par2 = scn.next();
-                }
-            }
+        //while (FindStopWord < 2) {
+        //    try {
+        //        WordNumber = processText(par1, par2);
+        //    } catch (TooSmallText e) {
+        //        System.out.println(e.toString());
+        //        scn.close();
+        //        return;
+        //    } catch (InvalidStopwordException e) {
+        //        System.out.println(e.toString());
+        //        if (FindStopWord < 2) {
+        //            if (!isRunningJUnit()) {
+        //                System.out.println(" try another stopword:");
+        //            }
+         //           par2 = scn.next();
+         //       }
+         //   }
         }
 
         // print final word count
