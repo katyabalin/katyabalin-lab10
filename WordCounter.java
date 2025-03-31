@@ -4,14 +4,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WordCounter {
+    // minimum number of words required
     public final static int WordsMinNumber = 5;
+
+    // used to track if stopword was found or not
     public static int FindStopWord;
 
-    
+    // checks if the program is running under junit 
     private static boolean isRunningJUnit() {
         return System.getProperty("java.class.path").contains("junit");
     }
 
+    // reads file content into a stringbuffer
+    // keeps prompting until a valid file is given (unless in junit)
+    // throws emptyfileexception if file has no content
     public static StringBuffer processFile(String path) throws EmptyFileException {
         boolean isRead = false;
         String fl = path;
@@ -21,8 +27,8 @@ public class WordCounter {
             File f = new File(fl);
             if (!f.canRead()) {
                 if (!isRunningJUnit()) {
-                    System.out.print("Can't read file " + fl);
-                    System.out.print("Select another file to process:");
+                    System.out.print("can't read file " + fl);
+                    System.out.print("select another file to process:");
                 }
                 fl = scn.next();
             } else {
@@ -50,10 +56,13 @@ public class WordCounter {
         return sb;
     }
 
+    // counts words in the text, optionally stopping at a stopword
+    // throws toosmalltext if fewer than 5 words
+    // throws invalidstopwordexception if stopword isn't found
     public static int processText(StringBuffer sb, String stopWord) throws InvalidStopwordException, TooSmallText {
         if (sb == null || sb.length() == 0) {
             FindStopWord += 2;
-            throw new TooSmallText("Only found 0 words.");
+            throw new TooSmallText("only found 0 words.");
         }
 
         Pattern regex = Pattern.compile("[a-zA-Z0-9']+");
@@ -67,7 +76,7 @@ public class WordCounter {
                 count++;
             }
             if (count < WordsMinNumber) {
-                throw new TooSmallText("Only found " + count + " words.");
+                throw new TooSmallText("only found " + count + " words.");
             }
             countThroughWord = count;
         } else {
@@ -81,11 +90,11 @@ public class WordCounter {
                 }
             }
             if (count < WordsMinNumber) {
-                throw new TooSmallText("Only found " + count + " words.");
+                throw new TooSmallText("only found " + count + " words.");
             }
             if (!isFound) {
                 FindStopWord += 1;
-                throw new InvalidStopwordException("Couldn't find stopword: " + stopWord);
+                throw new InvalidStopwordException("couldn't find stopword: " + stopWord);
             } else {
                 FindStopWord += 2;
             }
@@ -94,9 +103,12 @@ public class WordCounter {
         return countThroughWord;
     }
 
+    // main method: handles user input and manages logic
+    // asks user to choose between file or text input
+    // handles exceptions and retry logic for stopword
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("main(): No arguments");
+            System.out.println("main(): no arguments");
             return;
         }
 
@@ -104,9 +116,10 @@ public class WordCounter {
         int opt = 0;
         boolean loop = true;
 
+        // ask for input type until valid option is entered
         while (loop) {
             if (!isRunningJUnit()) {
-                System.out.print("Choose option: 1 - process the file, 2 - text itself");
+                System.out.print("choose option: 1 - process the file, 2 - text itself");
             }
 
             opt = scn.nextInt();
@@ -114,11 +127,12 @@ public class WordCounter {
                 loop = false;
             } else {
                 if (!isRunningJUnit()) {
-                    System.out.print("Invalid option");
+                    System.out.print("invalid option");
                 }
             }
         }
 
+        // grab text from either file or command line
         StringBuffer par1 = new StringBuffer(args[0]);
         if (opt == 1) {
             try {
@@ -129,6 +143,7 @@ public class WordCounter {
             }
         }
 
+        // check for optional stopword
         String par2 = null;
         if (args.length > 1) {
             par2 = args[1];
@@ -137,6 +152,7 @@ public class WordCounter {
         FindStopWord = 0;
         int WordNumber = 0;
 
+        // allow retry once if stopword is missing
         while (FindStopWord < 2) {
             try {
                 WordNumber = processText(par1, par2);
@@ -148,14 +164,15 @@ public class WordCounter {
                 System.out.println(e.toString());
                 if (FindStopWord < 2) {
                     if (!isRunningJUnit()) {
-                        System.out.println(" Try another stopword:");
+                        System.out.println(" try another stopword:");
                     }
                     par2 = scn.next();
                 }
             }
         }
 
-        System.out.print("Found " + WordNumber + " words.");
+        // print final word count
+        System.out.print("found " + WordNumber + " words.");
         scn.close();
     }
 }
